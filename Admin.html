@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin - ULTIMATE FINAL - No Bugs</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#000000">
+<link rel="icon" href="logo.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<style>[contenteditable=true]:empty:before{content:attr(placeholder);color:#9ca3af}</style>
+</head><body class="bg-[#f6f5f1] p-2">
+<div class="max-w-[1600px] mx-auto">
+<div class="bg-black text-white border-2 border-gray-800 rounded-2xl p-3 flex justify-between items-center">
+<div class="flex gap-3 items-center"><img src="logo.png" class="w-10 h-10 rounded-xl bg-white border-2 border-white object-contain" onerror="this.style.display='none'"><div><h1 class="font-black text-sm">📁 Admin - ULTIMATE FINAL ✅</h1><div class="text-[10px] text-gray-400">Full Tree ✅ + Bulk Universal ✅ + Rich Notes Color Exact ✅ + Black ✅</div></div></div>
+<div class="flex gap-1"><button onclick="goRoot()" class="bg-white text-black px-3 py-2 rounded-full text-[11px] font-black">🏠 ROOT</button><button onclick="shareApp()" class="bg-blue-600 text-white px-3 py-2 rounded-full text-[11px] font-bold">📤</button></div>
+</div>
+
+<div class="mt-3 grid lg:grid-cols-[360px_380px_1fr] gap-3">
+<div class="bg-white border-2 border-orange-300 rounded-2xl p-3 h-[92vh] overflow-auto">
+<h3 class="font-black text-sm">🌳 FULL TREE - WORKING</h3>
+<div id="fullTree" class="mt-3 text-sm"></div>
+</div>
+
+<div class="space-y-3 h-[92vh] overflow-auto">
+<div class="bg-white border-2 border-black rounded-2xl p-3"><div id="breadcrumb" class="flex gap-1 flex-wrap"></div><div id="pathDisplay" class="mt-2 bg-black text-white px-3 py-1 rounded-full text-[11px] font-mono"></div><div id="depthInfo" class="mt-2 bg-amber-200 px-3 py-1 rounded-full text-[11px] font-bold inline-block"></div></div>
+<div class="bg-white border rounded-2xl p-3"><h3 class="font-bold text-sm">📁 New Folder</h3><div class="flex gap-2 mt-2"><input id="folderNameInput" class="flex-1 border rounded-full px-3 h-9 text-sm" placeholder="Folder"/><button onclick="createFolder()" class="bg-black text-white px-4 rounded-full text-xs font-bold">+ Add</button></div><div class="mt-2 grid grid-cols-3 gap-1"><button onclick="quickCreate('SSC')" class="border rounded-full py-1 text-[11px]">SSC</button><button onclick="quickCreate('Math')" class="border rounded-full py-1 text-[11px]">Math</button><button onclick="quickCreate('Physics')" class="border rounded-full py-1 text-[11px]">Physics</button><button onclick="quickCreate('2024')" class="border rounded-full py-1 text-[11px]">2024</button><button onclick="quickCreate('Shift 1')" class="border rounded-full py-1 text-[11px]">Shift 1</button><button onclick="quickCreate('Set 1')" class="border rounded-full py-1 text-[11px]">Set 1</button></div></div>
+<div class="bg-white border rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-sm">📂 Folders</h3><span id="folderCount" class="text-xs bg-black text-white px-2 rounded-full">0</span></div><div id="folderList" class="mt-2 grid gap-2"></div></div>
+<div class="bg-white border rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-sm">📝 Tests</h3><span id="testCount" class="text-xs bg-blue-600 text-white px-2 rounded-full">0</span></div><div id="allTests" class="mt-2 grid gap-2"></div></div>
+<div class="bg-amber-50 border-2 border-orange-400 rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-sm">📒 Notes - Color Exact</h3><span id="noteCount" class="text-xs bg-amber-500 text-white px-2 rounded-full">0</span></div><div id="allNotes" class="mt-2 grid gap-2"></div></div>
+<div class="bg-black text-white rounded-2xl p-3"><div class="flex justify-between"><h3 class="font-bold text-xs">🏆 Leaderboard</h3><span id="resultCount" class="text-[10px] bg-white/20 px-2 rounded-full">0</span></div><div id="leaderboardAdmin" class="mt-2 grid gap-1 max-h-[200px] overflow-auto"></div></div>
+</div>
+
+<div class="space-y-3 h-[92vh] overflow-auto">
+<div class="bg-white border-2 border-black rounded-2xl p-3">
+<div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-2 mb-3"><div class="text-[11px] font-black">📍 Location:</div><div id="testLocationInfo" class="text-[11px] font-mono font-bold"></div></div>
+<h2 class="font-black text-sm">📝 Test Banaye</h2>
+<input id="testNameInput" class="w-full border-2 rounded-full px-4 h-10 mt-2 bg-[#fbfaf7] text-sm font-bold" placeholder="Test Name"/>
+<div class="mt-3 bg-blue-50 border-2 border-blue-300 rounded-2xl p-3">
+<h3 class="font-black text-xs">⏱ Time - S/M/H</h3>
+<div class="mt-2 bg-white rounded-xl p-2 border-2 border-blue-200">
+<label class="text-[11px] font-bold">Total Time *</label>
+<div class="flex gap-1 mt-1"><input id="totalTimeVal" type="number" value="10" class="flex-1 border-2 border-blue-400 rounded-full px-3 h-9 text-sm font-black"><select id="totalTimeUnit" class="border-2 rounded-full px-2 h-9 text-xs font-bold"><option value="sec">Seconds</option><option value="min" selected>Minutes</option><option value="hr">Hours</option></select></div>
+</div>
+<div class="bg-white rounded-xl p-2 border mt-2">
+<label class="flex gap-2 items-center text-[11px] font-bold"><input id="usePerQTime" type="checkbox" onchange="togglePerQ()" class="w-4 h-4"> Per Q Optional</label>
+<div id="perQBox" class="hidden mt-2"><div class="flex gap-1"><input id="perQTimeVal" type="number" value="60" class="flex-1 border-2 rounded-full px-3 h-9 text-xs"><select id="perQTimeUnit" class="border-2 rounded-full px-2 h-9 text-xs"><option value="sec" selected>Sec</option><option value="min">Min</option><option value="hr">Hr</option></select></div></div>
+</div>
+<div class="mt-2 bg-white rounded-xl p-2 border text-[10px]">Total: <span id="totalSecDisplay" class="font-black">600 sec</span> | Q: <span id="qCountDisplay">0</span> | <span id="perQSecDisplay">off</span><br><label class="flex gap-2 mt-2"><input id="allowStudentCustom" type="checkbox" checked class="w-4 h-4"> Student custom allow</label></div>
+</div>
+
+<div class="mt-3 bg-green-50 border-2 border-green-500 rounded-2xl p-3">
+<h3 class="font-black text-xs">⚡ Bulk 200Q - UNIVERSAL - Chahe Jaise Daalo</h3>
+<div class="text-[10px] text-green-700 font-bold mt-1">Q1. a) b) c) d) सही -  ya  Q: A: B: C: D: Ans:  - Dono Chalega!</div>
+<textarea id="bulkInput" class="w-full border-2 border-green-300 rounded-xl p-2 mt-2 bg-white text-[11px] h-[180px]" placeholder="Q: Question? - [UPSC]&#10;A: Opt1&#10;B: Opt2&#10;C: Opt3&#10;D: Opt4&#10;Ans: C&#10;Exp: ...&#10;---&#10;Q1. Question? a) Opt1 b) Opt2 c) Opt3 d) Opt4 sahi - a)"></textarea>
+<div class="flex gap-2 mt-2"><button onclick="parseBulk()" class="flex-[2] bg-green-600 text-white rounded-full h-10 text-xs font-black">⚡ Bulk Add - No Empty Q</button><button onclick="clearBulk()" class="bg-white border-2 px-3 rounded-full text-xs">Clear</button></div>
+<div class="flex gap-2 mt-2"><input type="file" id="bulkFile" accept=".txt" class="hidden" onchange="loadFile(event)"><button onclick="document.getElementById('bulkFile').click()" class="flex-1 border-2 border-dashed rounded-full h-8 text-[10px] font-bold">📁 File</button><button onclick="downloadSample()" class="flex-1 bg-white border-2 rounded-full h-8 text-[10px]">📥 Sample</button></div>
+<div id="bulkPreview" class="mt-2"></div>
+</div>
+
+<div class="mt-3 flex justify-between"><span class="font-black text-xs">📝 Questions</span><span id="qCount" class="bg-black text-white px-2 rounded-full text-[10px]">0</span></div>
+<div id="questionsContainer" class="mt-2 grid gap-2 max-h-[400px] overflow-auto border-2 border-dashed rounded-2xl p-2"></div>
+<div class="flex gap-2 mt-2"><button onclick="addQuestion()" class="flex-1 border-2 border-dashed rounded-full h-9 text-xs">+1 Q</button><button onclick="add5Questions()" class="flex-1 bg-gray-100 rounded-full h-9 text-xs">+5 Q</button><button onclick="add20Questions()" class="flex-1 bg-black text-white rounded-full h-9 text-xs">+20 Q</button></div>
+<button onclick="saveTest()" class="w-full bg-black text-white rounded-full h-12 mt-3 font-black text-sm">💾 Save Test</button>
+</div>
+
+<div class="bg-amber-50 border-2 border-orange-500 rounded-2xl p-3">
+<h2 class="font-black text-sm">📒 Rich Notes - Color Exact</h2>
+<p class="text-[10px] text-orange-700 font-bold mt-1">Jo shabd jis colour me, wahi rahega! Black wala black me!</p>
+<input id="noteTitleInput" class="w-full border-2 border-orange-400 rounded-full px-4 h-10 mt-2 bg-white text-sm font-black" placeholder="Title"/>
+<div class="mt-2 bg-white border-2 border-orange-400 rounded-xl p-2">
+<div class="flex flex-wrap gap-1 mb-2 border-b pb-2"><button onclick="formatText('bold')" class="w-8 h-8 bg-black text-white rounded-full font-black text-xs">B</button><button onclick="formatText('italic')" class="w-8 h-8 bg-gray-800 text-white rounded-full italic text-xs">I</button><button onclick="setColor('red')" class="w-8 h-8 bg-red-500 rounded-full border-2 border-white"></button><button onclick="setColor('blue')" class="w-8 h-8 bg-blue-600 rounded-full border-2 border-white"></button><button onclick="setColor('green')" class="w-8 h-8 bg-green-600 rounded-full border-2 border-white"></button><button onclick="setColor('orange')" class="w-8 h-8 bg-orange-500 rounded-full border-2 border-white"></button><button onclick="setColor('black')" class="w-8 h-8 bg-black rounded-full border-2 border-white"></button><button onclick="clearFormat()" class="px-2 h-8 bg-red-100 border rounded-full text-[10px]">Clear</button></div>
+<div id="noteContentInput" contenteditable="true" class="w-full min-h-[150px] max-h-[300px] overflow-auto p-3 bg-[#fffef5] text-[13px] rounded-xl" style="white-space:pre-wrap;word-wrap:break-word;" placeholder="Yaha colorful note likho - Word se copy paste karo - Color exact rahega!"></div>
+</div>
+<div class="mt-2 flex gap-2"><button onclick="saveNote()" class="flex-[2] bg-orange-500 text-white rounded-full h-10 font-black text-sm">💾 Save Note - Color Exact</button><button onclick="clearNoteForm()" class="flex-1 bg-white border-2 rounded-full h-10 text-xs">Clear</button></div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+var firebaseConfig={databaseURL:"https://smarttestapp-142cc-default-rtdb.firebaseio.com"};firebase.initializeApp(firebaseConfig);var db=firebase.database();
+var allFolders={},allTests={},allNotes={},allResults={},currentFolderId=null,currentPathStack=[],questions=[],editingNoteId=null,editingTestId=null;
+function toSeconds(v,u){v=parseFloat(v)||0;if(u==='sec')return v;if(u==='min')return v*60;if(u==='hr')return v*3600;return v;}
+function init(){
+db.ref('folders').on('value',s=>{allFolders=s.val()||{};renderAll();});
+db.ref('tests').on('value',s=>{allTests=s.val()||{};renderAll();});
+db.ref('notes').on('value',s=>{allNotes=s.val()||{};renderAll();});
+db.ref('results').on('value',s=>{allResults=s.val()||{};renderLeaderboardAdmin();});
+['totalTimeVal','totalTimeUnit','perQTimeVal','perQTimeUnit'].forEach(id=>{var e=document.getElementById(id);if(e){e.addEventListener('input',updateDisplays);e.addEventListener('change',updateDisplays);}});
+renderQuestions();
+}
+function rebuild(){var st=[],cur=currentFolderId,g=0;while(cur&&allFolders[cur]&&g<300){st.unshift({id:cur,name:allFolders[cur].name});cur=allFolders[cur].parentId||null;g++;}currentPathStack=st;}
+function getPath(){if(currentPathStack.length==0)return"/ Root";return"/ "+currentPathStack.map(f=>f.name).join(" / ");}
+function renderAll(){rebuild();var p=getPath();document.getElementById('pathDisplay').innerText=p;document.getElementById('testLocationInfo').innerText=p+" (L"+currentPathStack.length+")";document.getElementById('depthInfo').innerText="L"+currentPathStack.length;renderBread();renderFolders();renderQList();renderNoteList();renderQuestions();renderFullTree();renderLeaderboardAdmin();updateDisplays();}
+function buildTree(pid){var ids=Object.keys(allFolders).filter(id=>(allFolders[id].parentId||null)===pid);ids.sort((a,b)=>allFolders[a].name.localeCompare(allFolders[b].name));return ids;}
+function renderFullTree(){
+var el=document.getElementById('fullTree');
+if(!el) return;
+if(Object.keys(allFolders).length===0){el.innerHTML='<div class="text-[11px] text-gray-400 p-3 border-2 border-dashed rounded-xl text-center">📁 Koi folder nahi<br>Root me SSC, Math banao<br>Tree yaha dikhega</div>';return;}
+function renderNode(pid,depth,prefix){
+var ids=buildTree(pid);var h='';
+ids.forEach((id,i)=>{
+var f=allFolders[id];
+var isCur=id===currentFolderId;
+var sub=Object.keys(allFolders).filter(c=>allFolders[c].parentId===id).length;
+var tcnt=Object.keys(allTests).filter(tid=>allTests[tid].folderId===id).length;
+var isLast=i===ids.length-1;
+var bg=isCur?'bg-black text-white font-bold border-2 border-orange-400':'bg-[#fbfaf7] border-2 hover:border-orange-300';
+h+='<div class="flex gap-1 mb-1"><div class="text-gray-400 font-mono text-[11px] pt-2">'+prefix+(isLast?'└─':'├─')+'</div><button onclick="openFolder(\''+id+'\')" class="flex-1 text-left px-3 py-2 rounded-full text-xs '+bg+'">📁 '+f.name+' ('+sub+'F,'+tcnt+'T)</button></div>';
+if(depth<5){h+='<div class="ml-3">'+renderNode(id,depth+1,prefix+(isLast?'   ':'│  '))+'</div>';}
+});
+return h;
+}
+var html='<button onclick="goRoot()" class="w-full text-left px-3 py-2 rounded-full text-xs font-black mb-2 '+(currentFolderId===null?'bg-black text-white border-2 border-orange-400':'bg-amber-100 border-2')+'">🏠 Root - '+(Object.keys(allFolders).filter(id=>!allFolders[id].parentId).length)+' folders</button>';
+html+=renderNode(null,0,'');
+el.innerHTML=html;
+}
+function renderBread(){var el=document.getElementById('breadcrumb');if(currentPathStack.length==0){el.innerHTML='<span class="bg-black text-white px-4 py-1 rounded-full text-xs font-black">🏠 ROOT</span>';return;}var h='<button onclick="goRoot()" class="bg-gray-200 px-3 py-1 rounded-full text-xs font-bold">🏠 ROOT</button>';currentPathStack.forEach((f,i)=>{h+='<span class="text-gray-400">›</span><button onclick="openFolderByIndex('+i+')" class="px-3 py-1 rounded-full text-xs font-bold '+(i===currentPathStack.length-1?'bg-black text-white':'bg-blue-100')+'">'+f.name+'</button>';});el.innerHTML=h;}
+function renderFolders(){var el=document.getElementById('folderList');var ids=Object.keys(allFolders).filter(id=>(allFolders[id].parentId||null)===currentFolderId);ids.sort((a,b)=>allFolders[a].name.localeCompare(allFolders[b].name));document.getElementById('folderCount').innerText=ids.length;if(ids.length==0){el.innerHTML='<div class="text-[11px] text-gray-400 p-3 border-2 border-dashed rounded-xl text-center">Koi sub-folder nahi<br>Upar se banao</div>';return;}var h='';ids.forEach(id=>{var f=allFolders[id];var sub=Object.keys(allFolders).filter(c=>allFolders[c].parentId===id).length;var tcnt=Object.keys(allTests).filter(tid=>allTests[tid].folderId===id).length;h+='<div class="border-2 rounded-xl p-2 bg-white"><div class="flex justify-between"><div class="font-black text-xs">📁 '+f.name+'</div><div class="flex gap-1"><button onclick="editFolder(\''+id+'\')" class="w-7 h-7 bg-blue-100 rounded-full text-[10px]">✏️</button><button onclick="deleteFolder(\''+id+'\')" class="w-7 h-7 bg-red-100 rounded-full text-[10px]">🗑️</button></div></div><div class="text-[10px] text-gray-500">L'+(currentPathStack.length+1)+' • '+sub+'F • '+tcnt+'T</div><button onclick="openFolder(\''+id+'\')" class="w-full mt-2 bg-black text-white rounded-full py-2 text-[11px] font-black">Open →</button></div>';});el.innerHTML=h;}
+function renderQList(){var el=document.getElementById('allTests');var ids=Object.keys(allTests).filter(id=>(allTests[id].folderId||null)===currentFolderId);document.getElementById('testCount').innerText=ids.length;if(ids.length==0){el.innerHTML='<div class="text-[11px] text-gray-400 p-2 border border-dashed rounded-xl text-center">Koi test nahi - Right se banao</div>';return;}var h='';ids.forEach(id=>{var t=allTests[id];h+='<div class="border-2 rounded-xl p-2 bg-white"><div class="font-black text-xs">📝 '+t.name+'</div><div class="text-[10px]">'+(t.questions||[]).length+' Qs • '+(t.totalTimeSec/60).toFixed(1)+' min</div><div class="flex gap-1 mt-2"><button onclick="editTest(\''+id+'\')" class="px-3 py-1 bg-blue-600 text-white rounded-full text-[10px]">Edit</button><button onclick="db.ref(\'tests/'+id+'\').remove()" class="px-3 py-1 border-2 rounded-full text-[10px]">Del</button></div></div>';});el.innerHTML=h;}
+function renderNoteList(){var el=document.getElementById('allNotes');var ids=Object.keys(allNotes).filter(id=>(allNotes[id].folderId||null)===currentFolderId);document.getElementById('noteCount').innerText=ids.length;if(ids.length==0){el.innerHTML='<div class="text-[11px] text-amber-700 p-2 border-2 border-dashed rounded-xl text-center bg-amber-50">Koi note nahi</div>';return;}var h='';ids.forEach(id=>{var n=allNotes[id];h+='<div class="border-2 border-amber-300 rounded-2xl p-3 bg-white"><div class="font-black text-xs">📒 '+n.title+'</div><div class="mt-2 bg-[#fffef5] border rounded-xl p-2 text-[12px] max-h-[100px] overflow-auto" style="white-space:pre-wrap">'+(n.content||'')+'</div><div class="flex gap-1 mt-2"><button onclick="editNote(\''+id+'\')" class="px-3 py-1 bg-amber-500 text-white rounded-full text-[10px]">Edit</button><button onclick="db.ref(\'notes/'+id+'\').remove()" class="px-3 py-1 border rounded-full text-[10px]">Del</button></div></div>';});el.innerHTML=h;}
+function renderLeaderboardAdmin(){var el=document.getElementById('leaderboardAdmin');var rc=document.getElementById('resultCount');var curTests=Object.keys(allTests).filter(id=>(allTests[id].folderId||null)===currentFolderId);var results=Object.keys(allResults).map(k=>{var r=allResults[k];r._id=k;return r;}).filter(r=>curTests.includes(r.testId));if(rc) rc.innerText=results.length;if(!el) return;if(results.length==0){el.innerHTML='<div class="text-[11px] text-white/50 text-center p-2">Koi result nahi</div>';return;}results.sort((a,b)=>b.percent-a.percent);var h='';results.slice(0,20).forEach((r,i)=>{var m=i==0?'🥇':i==1?'🥈':i==2?'🥉':'#'+(i+1);h+='<div class="flex justify-between text-[11px] bg-white/10 rounded-full px-3 py-1 mt-1"><span>'+m+' '+r.studentName+'</span><span class="font-black">'+r.percent+'%</span></div>';});el.innerHTML=h;}
+function openFolder(id){currentFolderId=id;renderAll();}
+function openFolderByIndex(i){currentFolderId=currentPathStack[i].id;renderAll();}
+function goRoot(){currentFolderId=null;renderAll();}
+function quickCreate(n){document.getElementById('folderNameInput').value=n;createFolder();}
+function createFolder(){var n=document.getElementById('folderNameInput').value.trim();if(!n)return alert('Folder naam likho');var ref=db.ref('folders').push();ref.set({name:n,parentId:currentFolderId||null,path:getPath()+' / '+n,createdAt:Date.now(),depth:currentPathStack.length+1});document.getElementById('folderNameInput').value='';}
+function editFolder(id){var old=allFolders[id]?.name||"";var nw=prompt('Naya naam:',old);if(!nw)return;db.ref('folders/'+id+'/name').set(nw.trim());}
+function deleteFolder(id){if(!confirm('Is folder + andar ke saare delete honge?'))return;function delRec(fid){Object.keys(allFolders).filter(cid=>allFolders[cid].parentId===fid).forEach(cid=>delRec(cid));Object.keys(allTests).filter(tid=>allTests[tid].folderId===fid).forEach(tid=>db.ref('tests/'+tid).remove());Object.keys(allNotes).filter(nid=>allNotes[nid].folderId===fid).forEach(nid=>db.ref('notes/'+nid).remove());db.ref('folders/'+fid).remove();}delRec(id);}
+function shareApp(){var url=location.origin;if(navigator.share){navigator.share({title:'SmartTestApp',url:url});}else{navigator.clipboard.writeText(url);alert('Copy: '+url);}}
+function togglePerQ(){document.getElementById('perQBox').style.display=document.getElementById('usePerQTime').checked?'block':'none';updateDisplays();}
+function updateDisplays(){var t=toSeconds(document.getElementById('totalTimeVal').value,document.getElementById('totalTimeUnit').value);var p=toSeconds(document.getElementById('perQTimeVal').value,document.getElementById('perQTimeUnit').value);document.getElementById('totalSecDisplay').innerText=t.toFixed(0)+' sec';document.getElementById('perQSecDisplay').innerText=document.getElementById('usePerQTime').checked?p.toFixed(0)+' sec':'off';document.getElementById('qCountDisplay').innerText=questions.length;document.getElementById('qCount').innerText=questions.length;}
+function renderQuestions(){var c=document.getElementById('questionsContainer');if(questions.length===0){c.innerHTML='<div class="text-[11px] text-gray-400 p-4 border-2 border-dashed rounded-2xl text-center">Koi Q nahi - Bulk se add karo</div>';updateDisplays();return;}var h='';questions.forEach((q,i)=>{h+='<div class="border-2 rounded-2xl p-3 bg-[#fbfaf7]"><div class="flex justify-between"><span class="font-black text-xs bg-black text-white px-3 py-1 rounded-full">Q'+(i+1)+'</span><button onclick="removeQuestion('+i+')" class="w-7 h-7 bg-red-100 border-2 rounded-full text-[10px]">✕</button></div><textarea oninput="questions['+i+'].q=this.value" class="w-full mt-2 border-2 rounded-xl p-2 text-xs bg-white min-h-[50px] font-bold">'+(q.q||'')+'</textarea><div class="mt-2 grid gap-1">';for(var j=0;j<4;j++){var is=q.correct===j;h+='<div class="flex gap-1 items-center p-1 rounded-full '+(is?'bg-green-100 border-2 border-green-400':'bg-white border-2')+'"><span class="w-6 h-6 rounded-full bg-black text-white grid place-items-center text-[10px] font-black">'+['A','B','C','D'][j]+'</span><button onclick="questions['+i+'].correct='+j+';renderQuestions()" class="w-8 h-7 rounded-full text-[10px] '+(is?'bg-green-600 text-white':'bg-gray-200')+'">'+(is?'✅':'?')+'</button><input oninput="questions['+i+'].options['+j+']=this.value" value="'+(q.options[j]||'').replace(/"/g,'&quot;')+'" class="flex-1 border-2 rounded-full px-3 h-7 text-xs font-bold"/></div>';}h+='</div><textarea oninput="questions['+i+'].explanation=this.value" class="w-full mt-2 border rounded-xl p-2 text-xs bg-amber-50 min-h-[40px]">'+(q.explanation||'')+'</textarea></div>';});c.innerHTML=h;updateDisplays();}
+function addQuestion(){questions.push({q:"",options:["","","",""],correct:0,explanation:"",usePerQ:false,timeVal:60,timeUnit:"sec"});renderQuestions();}
+function add5Questions(){for(var i=0;i<5;i++) addQuestion();}
+function add20Questions(){for(var i=0;i<20;i++) addQuestion();}
+function removeQuestion(i){questions.splice(i,1);renderQuestions();}
+function clearBulk(){document.getElementById('bulkInput').value='';document.getElementById('bulkPreview').innerHTML='';}
+function loadFile(e){var file=e.target.files[0];if(!file) return;var r=new FileReader();r.onload=function(ev){document.getElementById('bulkInput').value=ev.target.result;alert('File load: '+file.name);};r.readAsText(file);}
+function downloadSample(){var s="Q: Light kya hai?\nA: Energy\nB: Matter\nC: Wave+Particle\nD: None\nAns: C\nExp: Dual\n---\nQ1. Reflection?\na) i=r b) i!=r c) i=2r d) None\nसही - a)";var b=new Blob([s],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sample.txt';a.click();}
+function parseBulk(){
+var txt=document.getElementById('bulkInput').value.trim();if(!txt) return alert('Bulk likho');
+questions=questions.filter(q=>q.q&&q.q.trim());
+var added=0;var blocks=[];
+if(txt.includes('---')){blocks=txt.split('---');}else{blocks=txt.split(/\n(?=Q\s*\d*\s*[\.:]|Q:\s)/i);if(blocks.length===1&&/Q:\s/i.test(txt)){blocks=txt.split(/(?=Q:\s)/i);}if(blocks.length===1){var t=txt.split(/\n(?=Q\d+\.)/);if(t.length>1)blocks=t;}blocks=blocks.filter(b=>b.trim().length>0);}
+blocks.forEach(blk=>{
+blk=blk.trim();if(!blk) return;var q="",opts=["","","",""],correct=0,exp="",usePerQ=false,tval=60,tunit="sec";
+var qM=blk.match(/Q:\s*([\s\S]*?)(?=\s*A:\s|\s*a\)|\s*Ans:|\s*Exp:|$)/i);if(!qM||!qM[1].trim()){qM=blk.match(/Q\s*\d*\s*[\.:)]?\s*([\s\S]*?)(?=\s*(?:a\)|A:|\(A\)|\n\s*a\)|\s*Ans:|\s*सही|\s*Exp:))/i);}if(qM)q=qM[1].trim().replace(/^\d+\.\s*/,'');else{var ls=blk.split('\n');if(ls.length>0)q=ls[0].replace(/Q\s*\d*\s*[\.:)]?\s*/i,'').trim();}
+var aM=blk.match(/A:\s*([\s\S]*?)(?=\s*B:\s|\s*b\)|\s*Ans:|\s*Exp:|$)/i);var bM=blk.match(/B:\s*([\s\S]*?)(?=\s*C:\s|\s*c\)|\s*Ans:|\s*Exp:|$)/i);var cM=blk.match(/C:\s*([\s\S]*?)(?=\s*D:\s|\s*d\)|\s*Ans:|\s*Exp:|$)/i);var dM=blk.match(/D:\s*([\s\S]*?)(?=\s*Ans:|\s*सही|\s*Exp:|$)/i);
+if(aM)opts[0]=aM[1].trim();if(bM)opts[1]=bM[1].trim();if(cM)opts[2]=cM[1].trim();if(dM)opts[3]=dM[1].trim();
+if(!opts[0]||!opts[1]){var ab=blk.match(/a\)\s*([^\n]*?)\s*b\)\s*([^\n]*?)\s*c\)\s*([^\n]*?)\s*d\)\s*([^\n]*?)(?:\n|\s*सही|\s*Ans:|\s*Exp:|$)/i);if(ab){opts[0]=ab[1].trim();opts[1]=ab[2].trim();opts[2]=ab[3].trim();opts[3]=ab[4].trim();}else{var a2=blk.match(/a\)\s*([^\n]+)/i);var b2=blk.match(/b\)\s*([^\n]+)/i);var c2=blk.match(/c\)\s*([^\n]+)/i);var d2=blk.match(/d\)\s*([^\n]+)/i);if(a2)opts[0]=a2[1].trim();if(b2)opts[1]=b2[1].trim();if(c2)opts[2]=c2[1].trim();if(d2)opts[3]=d2[1].trim();}}
+var ansM=blk.match(/Ans:\s*([A-D])/i);if(ansM){var al=ansM[1].toUpperCase();if(al=='A')correct=0;else if(al=='B')correct=1;else if(al=='C')correct=2;else if(al=='D')correct=3;}else{var sM=blk.match(/सही\s*-\s*([a-d])\)/i);if(sM){var sl=sM[1].toLowerCase();if(sl=='a')correct=0;else if(sl=='b')correct=1;else if(sl=='c')correct=2;else if(sl=='d')correct=3;}}
+var eM=blk.match(/Exp:\s*([\s\S]*?)(?=\s*Time:|\s*Q:|\s*Q\d+\.|$)/i);if(!eM) eM=blk.match(/बड़ी\s*एक्सप्लेनेशन\s*-\s*([\s\S]*?)(?=\s*Q\d+\.|\s*Q:\s|$)/i);if(eM)exp=eM[1].trim();
+q=q.replace(/\s*---\s*$/, '').trim();
+if(q&&opts[0]&&opts[1]&&opts[2]&&opts[3]){questions.push({q:q,options:opts,correct:correct,explanation:exp,usePerQ:usePerQ,timeVal:tval,timeUnit:tunit});added++;}else{console.log('Failed',blk.substring(0,100),q,opts);}
+});
+renderQuestions();
+document.getElementById('bulkPreview').innerHTML='<div class="bg-green-100 border-2 border-green-400 rounded-xl p-3"><div class="font-black text-green-800">✅ '+added+' Q add hue! Total: '+questions.length+' Qs</div><div class="text-[10px] font-bold text-green-700">UNIVERSAL: Q1. a) b) c) d) सही -  ya  Q: A: B: C: D: Ans:  - Dono!</div></div>';
+}
+function saveTest(){var n=document.getElementById('testNameInput').value.trim();var ts=toSeconds(document.getElementById('totalTimeVal').value,document.getElementById('totalTimeUnit').value);var ps=toSeconds(document.getElementById('perQTimeVal').value,document.getElementById('perQTimeUnit').value);var up=document.getElementById('usePerQTime').checked;var ac=document.getElementById('allowStudentCustom').checked;questions=questions.filter(q=>q.q&&q.q.trim()&&q.options[0]&&q.options[1]&&q.options[2]&&q.options[3]);if(!n)return alert('Test naam');if(!ts)return alert('Time');if(questions.length==0)return alert('Q add karo');var data={name:n,folderId:currentFolderId||null,folderPath:getPath(),questions:questions,totalTimeSec:ts,perQTimeSec:up?ps:null,usePerQTime:up,allowStudentCustom:ac,timeLimit:Math.round(ts/60),createdAt:Date.now(),depth:currentPathStack.length};if(editingTestId){db.ref('tests/'+editingTestId).set(data).then(()=>{alert('Updated! '+questions.length+'Q');editingTestId=null;document.getElementById('testNameInput').value='';questions=[];renderQuestions();});}else{var ref=db.ref('tests').push();ref.set(data).then(()=>{alert('Saved! '+questions.length+' Qs');document.getElementById('testNameInput').value='';questions=[];renderQuestions();});}}
+function editTest(id){var t=allTests[id];if(!t)return;editingTestId=id;document.getElementById('testNameInput').value=t.name;var ts=t.totalTimeSec||600;document.getElementById('totalTimeVal').value=(ts/60).toFixed(1);document.getElementById('totalTimeUnit').value='min';document.getElementById('usePerQTime').checked=t.usePerQTime||false;document.getElementById('perQTimeVal').value=t.perQTimeSec||60;document.getElementById('perQTimeUnit').value='sec';document.getElementById('allowStudentCustom').checked=t.allowStudentCustom!==false;document.getElementById('perQBox').style.display=t.usePerQTime?'block':'none';questions=JSON.parse(JSON.stringify(t.questions));renderQuestions();}
+function saveNote(){var ti=document.getElementById('noteTitleInput').value.trim();var ed=document.getElementById('noteContentInput');var co=ed.innerHTML;var tx=ed.innerText.trim();if(!ti||!tx)return alert('Title aur Note likho');var data={title:ti,content:co,folderId:currentFolderId||null,folderPath:getPath(),createdAt:Date.now()};if(editingNoteId){db.ref('notes/'+editingNoteId).set(data).then(()=>{alert('Note Updated - Color Exact!');clearNoteForm();});}else{var ref=db.ref('notes').push();ref.set(data).then(()=>{alert('Rich Note Saved! Color exact - Jo shabd jis colour me wahi rahega!');clearNoteForm();});}}
+function clearNoteForm(){document.getElementById('noteTitleInput').value='';document.getElementById('noteContentInput').innerHTML='';editingNoteId=null;}
+function editNote(id){var n=allNotes[id];if(!n)return;editingNoteId=id;document.getElementById('noteTitleInput').value=n.title;document.getElementById('noteContentInput').innerHTML=n.content;}
+function formatText(c){document.execCommand(c,false,null);document.getElementById('noteContentInput').focus();}
+function setColor(col){var m={red:'#ef4444',blue:'#2563eb',green:'#16a34a',orange:'#f97316',purple:'#9333ea',black:'#000000'};document.execCommand('foreColor',false,m[col]||col);document.getElementById('noteContentInput').focus();}
+function clearFormat(){document.execCommand('removeFormat',false,null);document.getElementById('noteContentInput').focus();}
+init();
+</script>
+</body></html>
